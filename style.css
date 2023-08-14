@@ -1,0 +1,12 @@
+body {
+    background-color: rgb(245, 233, 217);
+} 
+
+.contenido {
+    text-align: center;
+}
+
+ul {
+    justify-content: center;
+    list-style-type: none;
+  }
