@@ -1,56 +1,87 @@
 let monto=0;
+let opciones = [
+    {
+        id: 1,
+        descripcion: "Prestamo a 6 meses",
+        interes: 45,
+        meses: 6
+    },
+    {
+        id: 2,
+        descripcion: "Prestamo a 12 meses",
+        interes: 72,
+        meses: 12
+    },
+    {
+        id: 3,
+        descripcion: "Prestamo a 24 meses",
+        interes: 114,
+        meses: 24
+    }
+];
+
+function Pasos(n)
+{
+    switch(n) {
+        case 1:
+            let opcion = document.getElementById("tipo").value;
+            const resultado = opciones.find(({ id }) => id === parseInt(opcion));
+
+                displayBlock("paso1", "none");
+                displayBlock("titulo", "block");
+                displayBlock("paso2", "block");
+                document.getElementById("btnPaso2").disabled=true;
+
+                document.getElementById("tipoPrestamo").innerHTML=resultado.descripcion;
+                document.getElementById("intereses").innerHTML=resultado.interes + "%";
+          break;
+        case 2:
+            displayBlock("paso2", "none");
+            displayBlock("paso3", "block");
+            const resultado2 = opciones.find(({ id }) => id === parseInt(document.getElementById("tipo").value));
+            CalculoCuotaMesAMes(document.getElementById("monto").value, resultado2.interes, resultado2.meses);
+          break;
+      }
+}
 
 function Iniciar()
 {
-    let opciones = [
-        {
-            id: 1,
-            descripcion: "Prestamo a 6 meses",
-            interes: 45,
-            meses: 6
-        },
-        {
-            id: 2,
-            descripcion: "Prestamo a 12 meses",
-            interes: 72,
-            meses: 12
-        },
-        {
-            id: 3,
-            descripcion: "Prestamo a 24 meses",
-            interes: 114,
-            meses: 24
-        }
-    ];
-
     let listaDeOpciones="";
-    opciones.forEach(element => {
-        listaDeOpciones+= element.id.toString() + ". " + element.descripcion +"\n";
-    });
-
-    let opcion;
-    opcion=prompt(listaDeOpciones);
-
-    const resultado = opciones.find(({ id }) => id === parseInt(opcion));
-
-    if (resultado!=null)
+    let countOptions = document.querySelectorAll('option').length;
+    if (countOptions==0)
     {
-        alert("Usted seleccionó la opción '" + resultado.descripcion + "'");
-        SeleccionDeImporte();
-        CalculoCuotaMesAMes(monto, resultado.interes, resultado.meses);
-    } else {
-        alert("Usted seleccionó una opción incorrecta");
+        opciones.forEach(element => {
+            var opt = document.createElement("option");
+            opt.value = element.id;
+            opt.text = element.descripcion;
+            document.getElementById("tipo").appendChild(opt);
+        });
     }
-
+    
+    displayBlock("paso1", "block");
+    displayBlock("titulo", "none");
+    displayBlock("paso2", "none");
+    displayBlock("paso3", "none");
+    document.getElementById("monto").value="";
 }
 
 function SeleccionDeImporte()
 {
-    monto=parseFloat(prompt("Ingrese el monto total del crédito a solicitar", 0));
+    monto=parseFloat(document.getElementById("monto").value);
     if (isNaN(monto)==false && monto<=10000)
     {
-        alert("Debe ingresar un monto mayor a $ 10.000");
-        SeleccionDeImporte();
+        mostrarError("Debe ingresar un monto mayor a $ 10.000");
+    }
+}
+
+function validarMonto()
+{
+    monto=parseFloat(document.getElementById("monto").value);
+    if (isNaN(monto)==false && monto>10000)
+    {
+        document.getElementById("btnPaso2").disabled=false;
+    } else{
+        document.getElementById("btnPaso2").disabled=true;
     }
 }
 
@@ -81,3 +112,15 @@ function CalculoCuotaMesAMes(monto, interes, tiempo)
 
     document.getElementById("TPago").innerHTML=mostrar;
 } 
+
+function displayBlock(id, display)
+{
+    var step = document.getElementById(id);
+    step.style.display=display;
+}
+
+function mostrarError(error)
+{
+    displayBlock("error", "block");
+    document.getElementById("textoError").innerHTML=error;
+}
